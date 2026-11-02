@@ -312,6 +312,31 @@ def cmd_restore(hub, a):
     return 0
 
 
+def cmd_settemp(hub, a):
+    """Set the current target temperature for a zone (a hold until the next program event)."""
+    print(json.dumps(hub.call({"SET_TEMP": [a.temp, a.zone]}), ensure_ascii=False))
+    return 0
+
+
+def cmd_permit(hub, a):
+    """Open the pairing window (non-blocking). Put the neoAir into pairing mode within it."""
+    print(json.dumps(hub.permit_join(a.seconds, a.zone), ensure_ascii=False))
+    return 0
+
+
+def cmd_readsched(hub, a):
+    """Print a zone's weekly schedule as JSON (for backup or editing)."""
+    print(json.dumps(hub.comfort(a.zone).get(a.zone, {}), ensure_ascii=False))
+    return 0
+
+
+def cmd_setsched(hub, a):
+    """Set a zone's weekly schedule from a JSON string (same shape as readsched)."""
+    sched = json.loads(a.schedule)
+    print(json.dumps(hub.call({"SET_COMFORT_LEVELS": [sched, a.zone]}), ensure_ascii=False))
+    return 0
+
+
 def cmd_ha_json(hub, a):
     info = hub.info()
     out = {}
@@ -377,6 +402,25 @@ def main(argv=None):
     sp = sub.add_parser("autorestore")
     sp.add_argument("--dir", default=DEFAULT_SNAPDIR)
     sp.set_defaults(fn=cmd_autorestore)
+
+    sp = sub.add_parser("settemp")
+    sp.add_argument("zone")
+    sp.add_argument("temp", type=float)
+    sp.set_defaults(fn=cmd_settemp)
+
+    sp = sub.add_parser("permit")
+    sp.add_argument("zone")
+    sp.add_argument("seconds", nargs="?", type=int, default=180)
+    sp.set_defaults(fn=cmd_permit)
+
+    sp = sub.add_parser("readsched")
+    sp.add_argument("zone")
+    sp.set_defaults(fn=cmd_readsched)
+
+    sp = sub.add_parser("setsched")
+    sp.add_argument("zone")
+    sp.add_argument("schedule")
+    sp.set_defaults(fn=cmd_setsched)
 
     sub.add_parser("ha-json").set_defaults(fn=cmd_ha_json)
 

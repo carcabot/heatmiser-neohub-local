@@ -72,6 +72,10 @@ python3 neohub_local.py rename "Old" "New"
 python3 neohub_local.py snapshot              # back up all zones to ./snapshots
 python3 neohub_local.py restore "Living"      # re-push the saved config (after a battery change)
 python3 neohub_local.py autorestore           # re-push ONLY zones that look reset (safe to run hourly)
+python3 neohub_local.py settemp "Living" 21   # set target temperature now
+python3 neohub_local.py permit "Bucatarie" 180   # open pairing window (non-blocking)
+python3 neohub_local.py readsched "Living"    # print the weekly schedule (JSON)
+python3 neohub_local.py setsched "Living" '"'"'{...}'"'"'  # set the weekly schedule from JSON
 python3 neohub_local.py ha-json               # compact JSON for Home Assistant
 ```
 
