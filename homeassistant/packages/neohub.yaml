@@ -1,0 +1,73 @@
+# Package neoHub (local, fara cloud). Izolat - nu atinge configuration.yaml.
+command_line:
+  - sensor:
+      name: neohub_raw
+      unique_id: neohub_raw
+      command: "python3 /config/neohub/neohub_local.py ha-json"
+      scan_interval: 120
+      value_template: "{{ value_json.keys() | list | count }}"
+      json_attributes_path: "$"
+      json_attributes:
+        - Living
+
+template:
+  - sensor:
+      - name: "Living temperatura"
+        unique_id: neohub_living_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.neohub_raw','Living').current_temperature | default('unknown') }}"
+      - name: "Living setpoint"
+        unique_id: neohub_living_set
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.neohub_raw','Living').target_temperature | default('unknown') }}"
+    binary_sensor:
+      - name: "Living baterie slaba"
+        unique_id: neohub_living_lowbat
+        device_class: battery
+        state: "{{ state_attr('sensor.neohub_raw','Living').low_battery | default(false) }}"
+      - name: "Living conectat"
+        unique_id: neohub_living_online
+        device_class: connectivity
+        state: "{{ not (state_attr('sensor.neohub_raw','Living').offline | default(true)) }}"
+      - name: "Living incalzeste"
+        unique_id: neohub_living_heating
+        device_class: heat
+        state: "{{ state_attr('sensor.neohub_raw','Living').heating | default(false) }}"
+
+shell_command:
+  neohub_snapshot: python3 /config/neohub/neohub_local.py snapshot --dir /config/neohub/snapshots
+  neohub_restore: python3 /config/neohub/neohub_local.py restore "{{ zone }}" --dir /config/neohub/snapshots
+  neohub_autorestore: python3 /config/neohub/neohub_local.py autorestore --dir /config/neohub/snapshots
+  neohub_pair: python3 /config/neohub/neohub_local.py pair "{{ zone }}" {{ seconds | default(120) }}
+
+automation:
+  - id: neohub_snapshot_daily
+    alias: neoHub snapshot zilnic
+    trigger:
+      - platform: time
+        at: "03:30:00"
+    action:
+      - service: shell_command.neohub_snapshot
+    mode: single
+  - id: neohub_autorestore_hourly
+    alias: neoHub auto-restore orar
+    trigger:
+      - platform: time_pattern
+        minutes: "17"
+    action:
+      - service: shell_command.neohub_autorestore
+    mode: single
+  - id: neohub_lowbat_notify
+    alias: neoHub alerta baterie slaba
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.living_baterie_slaba
+        to: "on"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: Heatmiser Living
+          message: "Bateria termostatului Living e slaba. Dupa schimbare, setarile se repun automat (auto-restore orar) sau din shell_command.neohub_restore."
+    mode: single
