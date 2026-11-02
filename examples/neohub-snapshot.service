@@ -1,0 +1,9 @@
+# /etc/systemd/system/neohub-snapshot.service  (+ matching .timer)
+# systemctl enable --now neohub-snapshot.timer
+[Unit]
+Description=neoHub snapshot
+
+[Service]
+Type=oneshot
+Environment=NEOHUB_HOST=192.168.1.100
+ExecStart=/usr/bin/python3 /opt/neohub/neohub_local.py snapshot

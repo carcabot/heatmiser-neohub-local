@@ -1,4 +1,4 @@
-# Package neoHub (local, fara cloud). Izolat - nu atinge configuration.yaml.
+# neoHub package (local, cloud-free). Isolated - does not touch configuration.yaml.
 command_line:
   - sensor:
       name: neohub_raw
@@ -12,7 +12,7 @@ command_line:
 
 template:
   - sensor:
-      - name: "Living temperatura"
+      - name: "Living temperature"
         unique_id: neohub_living_temp
         unit_of_measurement: "°C"
         device_class: temperature
@@ -23,15 +23,15 @@ template:
         device_class: temperature
         state: "{{ state_attr('sensor.neohub_raw','Living').target_temperature | default('unknown') }}"
     binary_sensor:
-      - name: "Living baterie slaba"
+      - name: "Living battery low"
         unique_id: neohub_living_lowbat
         device_class: battery
         state: "{{ state_attr('sensor.neohub_raw','Living').low_battery | default(false) }}"
-      - name: "Living conectat"
+      - name: "Living connected"
         unique_id: neohub_living_online
         device_class: connectivity
         state: "{{ not (state_attr('sensor.neohub_raw','Living').offline | default(true)) }}"
-      - name: "Living incalzeste"
+      - name: "Living heating"
         unique_id: neohub_living_heating
         device_class: heat
         state: "{{ state_attr('sensor.neohub_raw','Living').heating | default(false) }}"
@@ -44,7 +44,7 @@ shell_command:
 
 automation:
   - id: neohub_snapshot_daily
-    alias: neoHub snapshot zilnic
+    alias: neoHub daily snapshot
     trigger:
       - platform: time
         at: "03:30:00"
@@ -52,7 +52,7 @@ automation:
       - service: shell_command.neohub_snapshot
     mode: single
   - id: neohub_autorestore_hourly
-    alias: neoHub auto-restore orar
+    alias: neoHub hourly auto-restore
     trigger:
       - platform: time_pattern
         minutes: "17"
@@ -60,7 +60,7 @@ automation:
       - service: shell_command.neohub_autorestore
     mode: single
   - id: neohub_lowbat_notify
-    alias: neoHub alerta baterie slaba
+    alias: neoHub low-battery alert
     trigger:
       - platform: state
         entity_id: binary_sensor.living_baterie_slaba
@@ -69,5 +69,5 @@ automation:
       - service: persistent_notification.create
         data:
           title: Heatmiser Living
-          message: "Bateria termostatului Living e slaba. Dupa schimbare, setarile se repun automat (auto-restore orar) sau din shell_command.neohub_restore."
+          message: "Living thermostat battery is low. After replacing it, settings are re-pushed automatically (hourly auto-restore) or via shell_command.neohub_restore."
     mode: single

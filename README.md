@@ -85,6 +85,11 @@ Copy `neohub_local.py` to `/config/neohub/` and drop
 `/config/packages/`. Full instructions: [homeassistant/README.md](homeassistant/README.md).
 You get per-zone sensors, a daily snapshot, and hourly auto-restore.
 
+> **Alternative:** the community HACS integration **"Heatmiser Neo"** gives full `climate`
+> entities. It can use the TLS WebSocket API on port **4243** with a token from
+> `/var/local/often/tokens`. Use it for rich thermostat cards; this repo's tools remain
+> useful for pairing and for snapshot/restore, which that integration does not do.
+
 ## Step 4 — Auto-restore after a dead battery (the whole point)
 
 neoAir thermostats forget their schedule/settings when the battery dies. The fix:
@@ -115,3 +120,16 @@ once on the thermostat. See [docs/auto-restore.md](docs/auto-restore.md).
   spec.
 - Enabling the port is a one-time edit of the hub's `dcb100` config file; everything after
   is done over the network.
+
+## More docs
+
+- [docs/enable-local-api.md](docs/enable-local-api.md) - enable port 4242 (serial + microSD)
+- [docs/serial-console.md](docs/serial-console.md) - serial console walkthrough (tested)
+- [docs/api-commands.md](docs/api-commands.md) - the local JSON command reference
+- [docs/auto-restore.md](docs/auto-restore.md) - restore after a dead battery
+- [docs/troubleshooting.md](docs/troubleshooting.md) - red LED, pairing, offline writes
+- [homeassistant/README.md](homeassistant/README.md) - Home Assistant package
+- [tools/](tools/) - serial console helpers
+- [examples/](examples/) - cron / systemd for running without Home Assistant
+- [SECURITY.md](SECURITY.md) - the 4242 port is unauthenticated; read this
+- [CONTRIBUTING.md](CONTRIBUTING.md) - especially the microSD image bounty

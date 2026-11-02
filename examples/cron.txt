@@ -1,0 +1,8 @@
+# Run snapshot + auto-restore without Home Assistant (crontab -e).
+# Adjust the path and set NEOHUB_HOST to your hub's IP.
+
+# daily snapshot at 03:30
+30 3 * * *  NEOHUB_HOST=192.168.1.100 /usr/bin/python3 /opt/neohub/neohub_local.py snapshot >> /var/log/neohub.log 2>&1
+
+# hourly auto-restore (only acts on a zone that looks reset AND is online)
+17 * * * *  NEOHUB_HOST=192.168.1.100 /usr/bin/python3 /opt/neohub/neohub_local.py autorestore >> /var/log/neohub.log 2>&1

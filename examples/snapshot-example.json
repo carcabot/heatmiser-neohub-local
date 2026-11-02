@@ -1,0 +1,20 @@
+{
+  "zone": "Living",
+  "saved_at": "2026-01-01T03:30:00",
+  "info": {
+    "device": "Living",
+    "CURRENT_TEMPERATURE": "21.0",
+    "CURRENT_SET_TEMPERATURE": "16.0",
+    "PROGRAM_MODE": "5DAY/2DAY",
+    "SENSOR_SELECTION": "BUILT_IN_AIR_SENSOR",
+    "OUTPUT_DELAY": 0,
+    "TEMPERATURE_FORMAT": false,
+    "LOW_BATTERY": false,
+    "OFFLINE": false,
+    "HEATING": false
+  },
+  "comfort_levels": {
+    "monday": {"wake": ["07:00", 21], "leave": ["09:00", 16], "return": ["16:00", 21], "sleep": ["22:00", 16]},
+    "sunday": {"wake": ["09:00", 21], "leave": ["24:00", 16], "return": ["24:00", 21], "sleep": ["24:00", 16]}
+  }
+}
